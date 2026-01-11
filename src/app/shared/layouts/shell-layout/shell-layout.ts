@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { MenuItem } from 'primeng/api';
 import { Avatar } from 'primeng/avatar';
@@ -10,7 +10,8 @@ import { Avatar } from 'primeng/avatar';
     RouterOutlet,
     DrawerModule,
     RouterLink,
-    Avatar
+    Avatar,
+    RouterLinkActive
   ],
   templateUrl: './shell-layout.html',
   styles: ``,
