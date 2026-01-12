@@ -1,1 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+@reference 'tailwindcss';
+
+html, body {
+  @apply h-full bg-gray-50;
+}
+
+body {
+  margin: 0;
+  font-family: Nunito, "Helvetica Neue", sans-serif;
+}
