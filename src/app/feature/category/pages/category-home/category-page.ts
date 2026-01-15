@@ -1,8 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { Category } from '@/core/interfaces/category';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { DialogService } from 'primeng/dynamicdialog';
+import { SaveCategoryDlg } from '../../components/save-category-dlg/save-category-dlg';
 
 export const CATEGORIES_MOCK: Category[] = [
   {
@@ -60,10 +62,12 @@ export const CATEGORIES_MOCK: Category[] = [
     TableModule,
     TagModule,
   ],
+  providers: [DialogService],
   templateUrl: './category-page.html',
   styles: ``,
 })
 export class CategoryPage {
+  #dialogService = inject(DialogService);
   first = 0;
   rows = 10;
   categories = signal(CATEGORIES_MOCK);
@@ -71,6 +75,21 @@ export class CategoryPage {
   pageChange(event: any): void {
     this.first = event.first;
     this.rows = event.rows;
+  }
+
+  openSaveCategoryDlg(category?: Category): void {
+    const ref = this.#dialogService.open(SaveCategoryDlg, {
+      header: category ? 'Actualizar categoria' : 'Nueva categoria',
+      data: category,
+      modal: true,
+      closable: true,
+      closeOnEscape: true,
+      width: '30vw',
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw'
+      },
+    });
   }
 
 }

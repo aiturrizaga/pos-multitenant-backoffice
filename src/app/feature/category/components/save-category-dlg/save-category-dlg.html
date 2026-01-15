@@ -1,0 +1,15 @@
+<form [formGroup]="categoryForm"
+      (ngSubmit)="saveCategory()"
+      class="flex flex-col gap-4 w-full">
+  <div class="flex flex-col gap-1">
+    <input pInputText type="text" id="username" placeholder="Nombre" formControlName="name" />
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <textarea pTextarea rows="5" placeholder="Descripción" formControlName="description"></textarea>
+  </div>
+
+  <button pButton severity="secondary" type="submit">
+    <span pButtonLabel>Guardar</span>
+  </button>
+</form>

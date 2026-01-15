@@ -3,7 +3,7 @@
     Categorias
   </h2>
 
-  <button pButton type="button" size="small">
+  <button pButton type="button" size="small" (click)="openSaveCategoryDlg()">
     <i class="ti ti-plus text-lg"></i>
     Nueva categoria
   </button>
@@ -48,7 +48,7 @@
           }
         </td>
         <td>
-          <button type="button" pButton text size="small" rounded>
+          <button type="button" pButton text size="small" rounded (click)="openSaveCategoryDlg(category)">
             <i class="ti ti-pencil text-xl"></i>
           </button>
 
