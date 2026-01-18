@@ -1,0 +1,157 @@
+<form [formGroup]="customerForm"
+      (ngSubmit)="saveCustomer()"
+      class="flex flex-col gap-4 w-full">
+
+  <div class="flex flex-col w-full gap-4">
+
+    <div class="flex justify-center w-full">
+      <p-select-button [options]="partnerTypes()"
+                       (onOptionClick)="selectPartnerType($event)"
+                       [formControl]="selectedPartnerType"
+                       optionLabel="label"
+                       optionValue="value"
+                       aria-labelledby="partner type"/>
+    </div>
+
+    @if (selectedPartnerType.value === 'PERSON') {
+      <div class="flex flex-col gap-1 w-full">
+        <label for="txtFirstName">Nombres</label>
+        <input pInputText
+               type="text"
+               id="txtFirstName"
+               formControlName="firstName"
+               [invalid]="formValidator.hasError('firstName')"/>
+        @if (formValidator.hasError('firstName')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('firstName') }}
+          </p-message>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1 w-full">
+        <label for="txtLastName">Apellidos</label>
+        <input pInputText
+               type="text"
+               id="txtLastName"
+               formControlName="lastName"
+               [invalid]="formValidator.hasError('lastName')"/>
+        @if (formValidator.hasError('lastName')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('lastName') }}
+          </p-message>
+        }
+      </div>
+    } @else {
+      <div class="flex flex-col gap-1 w-full">
+        <label for="txtLegalName">Razon Social</label>
+        <input pInputText
+               type="text"
+               id="txtLegalName"
+               formControlName="legalName"
+               [invalid]="formValidator.hasError('legalName')"/>
+        @if (formValidator.hasError('legalName')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('legalName') }}
+          </p-message>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1 w-full">
+        <label for="txtTradeName">Nombre comercial</label>
+        <input pInputText
+               type="text"
+               id="txtTradeName"
+               formControlName="tradeName"
+               [invalid]="formValidator.hasError('tradeName')"/>
+        @if (formValidator.hasError('tradeName')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('tradeName') }}
+          </p-message>
+        }
+      </div>
+    }
+
+    <div class="flex flex-col gap-1 w-full">
+      <label for="txtEmail">Correo electronico</label>
+      <input pInputText
+             type="email"
+             id="txtEmail"
+             formControlName="email"
+             [invalid]="formValidator.hasError('email')"/>
+      @if (formValidator.hasError('email')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('email') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <div class="flex flex-col gap-1 w-full">
+        <label for="txtDocumentType">Tipo de documento</label>
+        <p-select [options]="documentTypes()"
+                  readonly
+                  formControlName="documentType"
+                  optionLabel="label"
+                  optionValue="value"
+                  inputId="txtDocumentType"
+                  placeholder="Selecciona el tipo de documento"
+                  class="w-full"/>
+      </div>
+
+      <div class="flex flex-col gap-1 w-full">
+        <label for="txtDocumentNumber">Número de documento</label>
+        <input pInputText
+               type="text"
+               id="txtDocumentNumber"
+               formControlName="documentNumber"
+               [invalid]="formValidator.hasError('documentNumber')"/>
+        @if (formValidator.hasError('documentNumber')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('documentNumber') }}
+          </p-message>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <div class="flex flex-col gap-1 w-full">
+        <label for="txtPhone">Telefono</label>
+        <input pInputText
+               type="text"
+               id="txtPhone"
+               formControlName="phone"
+               [invalid]="formValidator.hasError('phone')"/>
+        @if (formValidator.hasError('phone')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('phone') }}
+          </p-message>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1 w-full">
+        <label for="txtMobile">Celular</label>
+        <input pInputText
+               type="text"
+               id="txtMobile"
+               formControlName="mobile"
+               [invalid]="formValidator.hasError('mobile')"/>
+        @if (formValidator.hasError('mobile')) {
+          <p-message severity="error" size="small" variant="simple">
+            {{ formValidator.getErrorMessage('mobile') }}
+          </p-message>
+        }
+      </div>
+    </div>
+  </div>
+
+
+  <div class="flex justify-end gap-2">
+    <button pButton severity="secondary" type="button" (click)="close()">
+      <span pButtonLabel>Cancelar</span>
+    </button>
+
+    <button pButton type="submit">
+      <span pButtonLabel>{{ customer() ? 'Actualizar' : 'Guardar' }}</span>
+    </button>
+  </div>
+</form>

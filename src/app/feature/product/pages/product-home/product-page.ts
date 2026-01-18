@@ -42,7 +42,7 @@ export class ProductPage implements OnInit{
   }
 
   getProducts(): void {
-    this.#productApi.getAll().subscribe(res => {
+    this.#productApi.getAll({sort: 'id,desc'}).subscribe(res => {
       if (res && res.data && res.data.content) {
         this.products.set(res.data.content);
       }
