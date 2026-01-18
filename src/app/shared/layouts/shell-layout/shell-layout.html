@@ -42,7 +42,20 @@
         </a>
       </div>
       <div class="flex items-center lg:order-2">
-        <p-avatar label="JD" shape="circle" size="normal" class="bg-purple-800! text-white!"/>
+        <button type="button" class="cursor-pointer" pRipple (click)="menu.toggle($event)">
+          <p-avatar [label]="avatar" shape="circle" size="normal" class="bg-purple-800! text-white!"/>
+        </button>
+        <p-menu #menu [model]="userOptions()" [popup]="true">
+          <ng-template #start>
+            <button pRipple
+                    class="relative overflow-hidden w-full border-0 bg-transparent flex items-start p-2 pl-4 hover:bg-surface-100">
+              <span class="flex flex-col items-start">
+                    <span class="font-bold">{{ fullName }}</span>
+                    <span class="text-sm">Admin</span>
+                </span>
+            </button>
+          </ng-template>
+        </p-menu>
       </div>
     </div>
   </nav>

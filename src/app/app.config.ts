@@ -5,6 +5,9 @@ import { routes } from './app.routes';
 import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
+import { includeBearerTokenInterceptor } from 'keycloak-angular';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideKeycloakAngular, provideKeycloakTokenInterceptor } from '@/app.provides';
 
 const SystemPreset = definePreset(Aura, {
   semantic: {
@@ -62,6 +65,9 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: SystemPreset
       }
-    })
+    }),
+    provideHttpClient(withInterceptors([includeBearerTokenInterceptor])),
+    provideKeycloakAngular(),
+    provideKeycloakTokenInterceptor()
   ]
 };
