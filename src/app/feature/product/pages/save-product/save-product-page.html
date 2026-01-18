@@ -1,1 +1,31 @@
-<p>save-product works!</p>
+<div class="flex items-center justify-between w-full">
+  <div class="flex items-start gap-2 -ml-2">
+    <button type="button"
+            (click)="gotoProductPage()"
+            pButton
+            text
+            rounded
+            pTooltip="Regresar"
+            tooltipPosition="bottom">
+      <i class="ti ti-arrow-left text-2xl"></i>
+    </button>
+
+    <div class="flex flex-col items-start">
+      @if (product(); as product) {
+        <h2 class="text-2xl font-medium">{{ product.name }}</h2>
+        <p class="text-sm text-gray-700">Edita la información de este producto</p>
+      } @else {
+        <h2 class="text-2xl font-medium">Crear producto</h2>
+        <p class="text-sm text-gray-700">Completa la información para agregar un nuevo producto</p>
+      }
+    </div>
+  </div>
+
+  <div class="flex items-center justify-end gap-2">
+    <button type="button" pButton text (click)="gotoProductPage()">
+      Cancelar
+    </button>
+
+    <p-split-button label="Guardar" (onClick)="saveProduct()" [model]="items()"/>
+  </div>
+</div>
