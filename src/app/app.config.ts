@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -8,6 +8,8 @@ import Aura from '@primeuix/themes/aura';
 import { includeBearerTokenInterceptor } from 'keycloak-angular';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideKeycloakAngular, provideKeycloakTokenInterceptor } from '@/app.provides';
+import { AppBootstrap } from '@/core/services/session/app-bootstrap';
+import { tenantCompanyInterceptor } from '@/core/interceptors/tenant-company-interceptor';
 
 const SystemPreset = definePreset(Aura, {
   semantic: {
@@ -61,12 +63,16 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
+    provideAppInitializer(() => {
+      const bs = inject(AppBootstrap);
+      return bs.init();
+    }),
     providePrimeNG({
       theme: {
         preset: SystemPreset
       }
     }),
-    provideHttpClient(withInterceptors([includeBearerTokenInterceptor])),
+    provideHttpClient(withInterceptors([includeBearerTokenInterceptor, tenantCompanyInterceptor])),
     provideKeycloakAngular(),
     provideKeycloakTokenInterceptor()
   ]

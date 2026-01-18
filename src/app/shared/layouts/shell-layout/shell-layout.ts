@@ -8,6 +8,7 @@ import { getInitials } from '@/shared/utils/string.util';
 import { MenuModule } from 'primeng/menu';
 import { ButtonModule } from 'primeng/button';
 import { Ripple } from 'primeng/ripple';
+import { SessionStore } from '@/core/services/session/session-store';
 
 @Component({
   selector: 'app-shell-layout',
@@ -27,6 +28,7 @@ import { Ripple } from 'primeng/ripple';
 export class ShellLayout implements OnInit {
   profile = signal<KeycloakProfile | null>(null);
   private keycloak = inject(Keycloak);
+  sessionStore = inject(SessionStore);
 
   menuItems = signal<MenuItem[]>([
     {
