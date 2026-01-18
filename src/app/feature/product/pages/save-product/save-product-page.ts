@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { SplitButtonModule } from 'primeng/splitbutton';
-import { MenuItem } from 'primeng/api';
-import { ProductCreateRequest, ProductResponse } from '@/core/interfaces/product';
+import { MenuItem, MessageService } from 'primeng/api';
+import { ProductCreateRequest, ProductResponse, ProductSkuResponse } from '@/core/interfaces/product';
 import { CardModule } from 'primeng/card';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormValidator } from '@/shared/utils/form-validator.util';
@@ -19,6 +19,8 @@ import { MessageModule } from 'primeng/message';
 import { TextareaModule } from 'primeng/textarea';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToggleSwitchChangeEvent, ToggleSwitchModule } from 'primeng/toggleswitch';
+import { ProductApi } from '@/core/services/product/product-api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-save-product-page',
@@ -34,7 +36,11 @@ import { ToggleSwitchChangeEvent, ToggleSwitchModule } from 'primeng/toggleswitc
     MessageModule,
     TextareaModule,
     CheckboxModule,
-    ToggleSwitchModule
+    ToggleSwitchModule,
+    ToastModule
+  ],
+  providers: [
+    MessageService
   ],
   templateUrl: './save-product-page.html',
   styles: ``,
@@ -45,6 +51,8 @@ export class SaveProductPage implements OnInit {
   #fb = inject(FormBuilder);
   #uomApi = inject(UnitMeasureApi);
   #categoryApi = inject(CategoryApi);
+  #productApi = inject(ProductApi);
+  #messageService = inject(MessageService);
   product = input.required<ProductResponse>();
   items = signal<MenuItem[]>([
     {
@@ -105,6 +113,43 @@ export class SaveProductPage implements OnInit {
 
   saveProduct(): void {
     console.log('Product form:', this.productForm.value);
+    if (this.productForm.invalid) {
+      this.productForm.markAllAsTouched();
+      return;
+    }
+
+    if (this.product()) {
+      this.updateProduct();
+    } else {
+      this.createProduct();
+    }
+  }
+
+  createProduct(): void {
+    this.#productApi.create(this.productForm.value).subscribe(res => {
+      if (res && res.data) {
+        this.#messageService.add({
+          severity: 'success',
+          summary: 'Producto creado',
+          detail: 'Se creo el producto con exito.'
+        });
+        this.gotoProductPage();
+      }
+    })
+  }
+
+  updateProduct(): void {
+    const productId = this.product()!.id;
+    this.#productApi.update(productId, this.productForm.value).subscribe(res => {
+      if (res && res.data) {
+        this.#messageService.add({
+          severity: 'success',
+          summary: 'Producto actualizada',
+          detail: 'Se actualizo el producto con exito.'
+        });
+        this.gotoProductPage();
+      }
+    })
   }
 
   gotoProductPage(): void {
@@ -112,21 +157,7 @@ export class SaveProductPage implements OnInit {
   }
 
   addSku(): void {
-    this.skus.push(
-      this.#fb.group({
-        id: [null as number | null],
-        skuCode: [''],
-        barcode: [''],
-        name: ['', Validators.required],
-        uomId: [3, [Validators.required, Validators.min(1)]],
-        salePrice: [null as number | null],
-        costPrice: [null as number | null],
-        isDefault: [false, Validators.required],
-        isBaseUnit: [true],
-        baseSkuId: [null as number | null],
-        baseQty: [null as number | null],
-      })
-    );
+    this.skus.push(this.createSkuGroup());
   }
 
   removeSku(index: number): void {
@@ -157,6 +188,34 @@ export class SaveProductPage implements OnInit {
     })
   }
 
+  private createSkuGroup(sku?: ProductSkuResponse): FormGroup {
+    return this.#fb.group({
+      id: [sku?.id ?? null],
+      skuCode: [sku?.skuCode ?? ''],
+      barcode: [sku?.barcode ?? ''],
+      name: [sku?.name ?? '', [Validators.required]],
+      uomId: [sku?.uomId ?? null, [Validators.required]],
+      salePrice: [sku?.salePrice ?? null],
+      costPrice: [sku?.costPrice ?? null],
+      isDefault: [sku?.isDefault ?? false, [Validators.required]],
+      isBaseUnit: [sku?.isBaseUnit ?? false],
+      baseSkuId: [sku?.baseSkuId ?? null],
+      baseQty: [sku?.baseQty ?? null],
+    });
+  }
+
+  private loadSkusFromProduct(product: ProductResponse): void {
+    this.skus.clear();
+
+    const skus = product.skus ?? [];
+    if (skus.length === 0) {
+      this.addSku();
+      return;
+    }
+
+    skus.forEach(sku => this.skus.push(this.createSkuGroup(sku)));
+  }
+
   private initProductForm(): void {
     this.productForm = this.#fb.group({
       code: ['', [Validators.required, Validators.maxLength(20)]],
@@ -179,16 +238,30 @@ export class SaveProductPage implements OnInit {
 
       metadata: [null as unknown | null],
 
-      categoryIds: [[] as string[]],
+      categoryIds: [[]],
 
       skus: this.#fb.array<FormGroup>([])
     });
 
     this.formValidator = new FormValidator(this.productForm);
+
+    if (!this.product()) {
+      this.addSku();
+      return;
+    }
+
+    const product = this.product()!;
+
+    this.productForm.patchValue({
+      ...product,
+      categoryIds: product.categories?.map(c => c.id) ?? []
+    });
+
+    this.loadSkusFromProduct(product);
   }
 
   get skus(): FormArray<FormGroup> {
-    return this.productForm.controls['skus'] as unknown as FormArray<FormGroup>;
+    return this.productForm.get('skus') as FormArray<FormGroup>;
   }
 
 }

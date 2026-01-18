@@ -1,3 +1,5 @@
+<p-toast />
+
 <div class="flex items-center justify-between w-full">
   <div class="flex items-start gap-2 -ml-2">
     <button type="button"
@@ -26,7 +28,7 @@
       Cancelar
     </button>
 
-    <p-split-button label="Guardar" (onClick)="saveProduct()" [model]="items()"/>
+    <p-split-button [label]="product() ? 'Actualizar' : 'Guardar'" (onClick)="saveProduct()" [model]="items()"/>
   </div>
 </div>
 
@@ -241,7 +243,7 @@
 
               <div class="flex flex-col gap-1 w-full">
                 <label for="txtSalePrice">Precio de venta</label>
-                <input pInputText type="text" id="txtSalePrice" formControlName="salePrice"
+                <input pInputText type="number" id="txtSalePrice" formControlName="salePrice"
                        [invalid]="formValidator.hasError('salePrice')"/>
                 @if (formValidator.hasError('salePrice')) {
                   <p-message severity="error" size="small" variant="simple">
@@ -252,7 +254,7 @@
 
               <div class="flex flex-col gap-1 w-full">
                 <label for="txtSalePrice">Precio costo</label>
-                <input pInputText type="text" id="txtSalePrice" formControlName="costPrice"
+                <input pInputText type="number" id="txtSalePrice" formControlName="costPrice"
                        [invalid]="formValidator.hasError('costPrice')"/>
                 @if (formValidator.hasError('costPrice')) {
                   <p-message severity="error" size="small" variant="simple">
