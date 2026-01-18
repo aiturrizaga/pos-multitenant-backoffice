@@ -29,3 +29,300 @@
     <p-split-button label="Guardar" (onClick)="saveProduct()" [model]="items()"/>
   </div>
 </div>
+
+<form [formGroup]="productForm" class="px-8 py-4">
+  <div class="flex flex-col md:flex-row items-start justify-between gap-4 mb-4 w-full">
+    <div class="w-full md:w-2/3">
+
+      <p-card header="Información">
+        <div class="pt-2 flex flex-col gap-4">
+          <div class="flex flex-col gap-1 w-full">
+            <label for="txtName">Nombre</label>
+            <input pInputText type="text" id="txtName" formControlName="name"
+                   [invalid]="formValidator.hasError('name')"/>
+            @if (formValidator.hasError('name')) {
+              <p-message severity="error" size="small" variant="simple">
+                {{ formValidator.getErrorMessage('name') }}
+              </p-message>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="txtDescription">Descripción</label>
+            <textarea pTextarea rows="4" id="txtDescription" formControlName="description"></textarea>
+            @if (formValidator.hasError('description')) {
+              <p-message severity="error" size="small" variant="simple">
+                {{ formValidator.getErrorMessage('description') }}
+              </p-message>
+            }
+          </div>
+
+          <div class="grid grid-cols-2 items-center gap-4">
+            <div class="flex flex-col gap-1 w-full">
+              <label for="txtInternalCode">Código interno</label>
+              <input pInputText type="text" id="txtInternalCode" formControlName="code"
+                     [invalid]="formValidator.hasError('code')"/>
+              @if (formValidator.hasError('code')) {
+                <p-message severity="error" size="small" variant="simple">
+                  {{ formValidator.getErrorMessage('code') }}
+                </p-message>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1 w-full">
+              <label for="selectCurrencies">Moneda</label>
+              <p-select [options]="currencyCodes()"
+                        [invalid]="formValidator.hasError('currencyCode')"
+                        formControlName="currencyCode"
+                        inputId="selectCurrencies"
+                        optionLabel="name"
+                        optionValue="code"
+                        placeholder="Selecciona una moneda"
+                        class="w-full" />
+              @if (formValidator.hasError('currencyCode')) {
+                <p-message severity="error" size="small" variant="simple">
+                  {{ formValidator.getErrorMessage('currencyCode') }}
+                </p-message>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1 w-full">
+              <label for="selectTaxes">Impuesto (IGV)</label>
+              <p-select [options]="taxIds()"
+                        [invalid]="formValidator.hasError('taxId')"
+                        formControlName="taxId"
+                        inputId="selectTaxes"
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Selecciona un impuesto"
+                        class="w-full" />
+              @if (formValidator.hasError('taxId')) {
+                <p-message severity="error" size="small" variant="simple">
+                  {{ formValidator.getErrorMessage('taxId') }}
+                </p-message>
+              }
+            </div>
+
+            <div class="flex flex-col gap-1 w-full">
+              <label for="txtUnspsc">Código SUNAT</label>
+              <input pInputText type="text" id="txtUnspsc" formControlName="unspsc"
+                     [invalid]="formValidator.hasError('unspsc')"/>
+              @if (formValidator.hasError('unspsc')) {
+                <p-message severity="error" size="small" variant="simple">
+                  {{ formValidator.getErrorMessage('unspsc') }}
+                </p-message>
+              }
+            </div>
+          </div>
+
+        </div>
+      </p-card>
+    </div>
+
+    <div class="w-full md:w-2/6">
+      <p-card header="Organizción">
+        <div class="pt-2 flex flex-col gap-4">
+
+          <div class="flex flex-col gap-1 w-full">
+            <label for="selectCategory">Categorias</label>
+            <p-multi-select [options]="categories()"
+                            formControlName="categoryIds"
+                            placeholder="Selecciona las categorias"
+                            optionLabel="name" optionValue="id"
+                            inputId="selectCategory"
+                            display="chip"
+                            class="w-full"/>
+          </div>
+
+          <div class="flex flex-col gap-1 w-full">
+            <label for="txtBrand">Marca</label>
+            <input pInputText type="text" id="txtBrand" formControlName="brand"
+                   [invalid]="formValidator.hasError('brand')"/>
+            @if (formValidator.hasError('brand')) {
+              <p-message severity="error" size="small" variant="simple">
+                {{ formValidator.getErrorMessage('brand') }}
+              </p-message>
+            }
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-4 w-full md:w-2/3">
+
+    <p-card>
+      <ng-template #header>
+        <div class="flex items-center justify-between px-5 pt-5">
+          <div class="text-xl font-semibold">SKUs</div>
+          <button pButton
+                  type="button"
+                  size="small"
+                  (click)="addSku()">
+            Agregar SKU
+          </button>
+        </div>
+      </ng-template>
+
+      <div formArrayName="skus" class="space-y-3">
+        @for (skuGroup of skus.controls; track i; let i = $index) {
+          <div
+            class="border border-gray-300 rounded p-3 space-y-2"
+            [formGroupName]="i"
+          >
+            <div class="flex items-center justify-between">
+              <div class="text-gray-600 font-semibold">SKU #{{ i + 1 }}</div>
+              <button type="button" pButton text size="small" severity="danger" (click)="removeSku(i)">Eliminar</button>
+            </div>
+
+            <div class="grid gap-3 md:grid-cols-2">
+
+              <div class="flex flex-col gap-1 w-full">
+                <label for="txtSkuCode">Código SKU</label>
+                <input pInputText type="text" id="txtSkuCode" formControlName="skuCode"
+                       [invalid]="formValidator.hasError('skuCode')"/>
+                @if (formValidator.hasError('skuCode')) {
+                  <p-message severity="error" size="small" variant="simple">
+                    {{ formValidator.getErrorMessage('skuCode') }}
+                  </p-message>
+                }
+              </div>
+
+              <div class="flex flex-col gap-1 w-full">
+                <label for="txtBarcode">Código de barras</label>
+                <input pInputText type="text" id="txtBarcode" formControlName="barcode"
+                       [invalid]="formValidator.hasError('barcode')"/>
+                @if (formValidator.hasError('barcode')) {
+                  <p-message severity="error" size="small" variant="simple">
+                    {{ formValidator.getErrorMessage('barcode') }}
+                  </p-message>
+                }
+              </div>
+
+              <div class="flex flex-col gap-1 w-full">
+                <label for="txtSkuName">Presentación</label>
+                <input pInputText type="text" id="txtSkuName" formControlName="name"
+                       [invalid]="formValidator.hasError('name')"/>
+                @if (formValidator.hasError('name')) {
+                  <p-message severity="error" size="small" variant="simple">
+                    {{ formValidator.getErrorMessage('name') }}
+                  </p-message>
+                }
+              </div>
+
+              <div class="flex flex-col gap-1 w-full">
+                <label for="txtBrand">Unidad de medida</label>
+                <p-select [options]="groupedUnitMeasures()"
+                          optionLabel="name"
+                          optionValue="id"
+                          formControlName="uomId"
+                          placeholder="Selecciona una medida"
+                          [invalid]="formValidator.hasError('uomId')"
+                          [group]="true"
+                          class="w-full">
+                  <ng-template let-group #group>
+                    <div class="flex items-center">
+                      <span>{{ group.category }}</span>
+                    </div>
+                  </ng-template>
+                  <ng-template let-uom #item>
+                    <div class="flex justify-between items-center gap-2 w-full">
+                      <div>{{ uom.name }}</div>
+                      <div class="text-gray-500">({{ uom.symbol }})</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+                @if (formValidator.hasError('uomId')) {
+                  <p-message severity="error" size="small" variant="simple">
+                    {{ formValidator.getErrorMessage('uomId') }}
+                  </p-message>
+                }
+              </div>
+
+              <div class="flex flex-col gap-1 w-full">
+                <label for="txtSalePrice">Precio de venta</label>
+                <input pInputText type="text" id="txtSalePrice" formControlName="salePrice"
+                       [invalid]="formValidator.hasError('salePrice')"/>
+                @if (formValidator.hasError('salePrice')) {
+                  <p-message severity="error" size="small" variant="simple">
+                    {{ formValidator.getErrorMessage('salePrice') }}
+                  </p-message>
+                }
+              </div>
+
+              <div class="flex flex-col gap-1 w-full">
+                <label for="txtSalePrice">Precio costo</label>
+                <input pInputText type="text" id="txtSalePrice" formControlName="costPrice"
+                       [invalid]="formValidator.hasError('costPrice')"/>
+                @if (formValidator.hasError('costPrice')) {
+                  <p-message severity="error" size="small" variant="simple">
+                    {{ formValidator.getErrorMessage('costPrice') }}
+                  </p-message>
+                }
+              </div>
+
+              <label class="flex items-center gap-2">
+                <p-checkbox inputId="checkDefault"
+                            formControlName="isDefault"
+                            [binary]="true" />
+                <label for="checkDefault" class="ml-2"> SKU por defecto </label>
+              </label>
+
+              <label class="flex items-center gap-2">
+                <p-checkbox inputId="checkBaseUnit"
+                            formControlName="isBaseUnit"
+                            [binary]="true" />
+                <label for="checkBaseUnit" class="ml-2"> Unidad base </label>
+              </label>
+            </div>
+          </div>
+        }
+      </div>
+    </p-card>
+
+    <p-card header="Inventario">
+      <div class="border border-gray-300 bg-gray-50 rounded-lg w-full p-4">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"/>
+              <path d="M12 12l8 -4.5"/>
+              <path d="M12 12l0 9"/>
+              <path d="M12 12l-8 -4.5"/>
+              <path d="M16 5.25l-8 4.5"/>
+            </svg>
+            <div class="flex flex-col items-start">
+              <div class="text-lg font-medium">Seguimiento de inventario</div>
+              <p class="text-sm">
+                Controla las cantidades disponibles
+              </p>
+            </div>
+          </div>
+          <p-toggleswitch formControlName="trackInventory" (onChange)="changeTrackInventory($event)"/>
+        </div>
+
+        @if (trackInventory()) {
+          <div class="grid gap-3 md:grid-cols-2 mt-4">
+            <label class="flex items-center gap-2">
+              <p-checkbox inputId="checkDefault"
+                          formControlName="trackLot"
+                          [binary]="true" />
+              <label for="checkDefault" class="ml-2"> Trackear Lotes </label>
+            </label>
+
+            <label class="flex items-center gap-2">
+              <p-checkbox inputId="checkBaseUnit"
+                          formControlName="trackExpiry"
+                          [binary]="true" />
+              <label for="checkBaseUnit" class="ml-2"> Trackear Vencimientos </label>
+            </label>
+          </div>
+        }
+      </div>
+    </p-card>
+
+  </div>
+
+</form>
