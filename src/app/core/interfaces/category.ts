@@ -18,3 +18,5 @@ export interface CategoryCreateRequest {
   color?: string;
   slug?: string;
 }
+
+export type CategoryUpdateRequest = Omit<CategoryCreateRequest, 'companyId'>;

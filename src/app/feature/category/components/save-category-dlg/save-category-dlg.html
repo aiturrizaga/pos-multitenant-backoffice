@@ -1,15 +1,47 @@
 <form [formGroup]="categoryForm"
       (ngSubmit)="saveCategory()"
       class="flex flex-col gap-4 w-full">
-  <div class="flex flex-col gap-1">
-    <input pInputText type="text" id="username" placeholder="Nombre" formControlName="name" />
+
+  <div class="flex w-full gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="cp-hex">Color</label>
+      <p-color-picker formControlName="color" [invalid]="formValidator.hasError('color')" inputId="cp-hex"/>
+      @if (formValidator.hasError('color')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('color') }}
+        </p-message>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1 w-full">
+      <label for="txtName">Nombre</label>
+      <input pInputText type="text" id="txtName" formControlName="name" [invalid]="formValidator.hasError('name')"/>
+      @if (formValidator.hasError('name')) {
+        <p-message severity="error" size="small" variant="simple">
+          {{ formValidator.getErrorMessage('name') }}
+        </p-message>
+      }
+    </div>
   </div>
 
   <div class="flex flex-col gap-1">
-    <textarea pTextarea rows="5" placeholder="Descripción" formControlName="description"></textarea>
+    <label for="txtDescription">Descripción</label>
+    <textarea pTextarea rows="5" id="txtDescription" formControlName="description"></textarea>
+    @if (formValidator.hasError('description')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('description') }}
+      </p-message>
+    }
   </div>
 
-  <button pButton severity="secondary" type="submit">
-    <span pButtonLabel>Guardar</span>
-  </button>
+
+  <div class="flex justify-end gap-2">
+    <button pButton severity="secondary" type="button" (click)="close()">
+      <span pButtonLabel>Cancelar</span>
+    </button>
+
+    <button pButton type="submit">
+      <span pButtonLabel>{{ category() ? 'Actualizar' : 'Guardar' }}</span>
+    </button>
+  </div>
 </form>

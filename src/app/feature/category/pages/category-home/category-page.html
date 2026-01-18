@@ -31,7 +31,9 @@
     </ng-template>
     <ng-template #body let-category>
       <tr>
-        <td>{{ category.color }}</td>
+        <td>
+          <div class="size-8 rounded" [style.background-color]="category.color" ></div>
+        </td>
         <td>{{ category.name }}</td>
         <td>{{ category.description }}</td>
         <td>
@@ -46,7 +48,7 @@
             <i class="ti ti-pencil text-xl"></i>
           </button>
 
-          <button type="button" pButton text size="small" rounded severity="danger">
+          <button type="button" pButton text size="small" rounded severity="danger" (click)="confirmInactiveCategory(category)">
             <i class="ti ti-trash text-xl"></i>
           </button>
         </td>
@@ -54,4 +56,6 @@
     </ng-template>
   </p-table>
 </div>
+
+<p-confirm-dialog />
 

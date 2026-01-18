@@ -8,6 +8,8 @@ import { MessageModule } from 'primeng/message';
 import { TextareaModule } from 'primeng/textarea';
 import { CategoryApi } from '@/core/services/category/category-api';
 import { SessionStore } from '@/core/services/session/session-store';
+import { FormValidator } from '@/shared/utils/form-validator.util';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
   selector: 'app-save-category-dlg',
@@ -16,7 +18,8 @@ import { SessionStore } from '@/core/services/session/session-store';
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    MessageModule
+    MessageModule,
+    ColorPickerModule
   ],
   templateUrl: './save-category-dlg.html',
   styles: ``,
@@ -30,6 +33,7 @@ export class SaveCategoryDlg implements OnInit, OnDestroy {
   #sessionStore = inject(SessionStore);
 
   categoryForm!: FormGroup;
+  formValidator!: FormValidator;
 
   category = signal<Category | null>(null);
 
@@ -42,6 +46,11 @@ export class SaveCategoryDlg implements OnInit, OnDestroy {
   }
 
   saveCategory(): void {
+    if (this.categoryForm.invalid) {
+      this.categoryForm.markAllAsTouched();
+      return;
+    }
+
     if (this.instance && this.instance.data) {
       this.updateCategory();
     } else {
@@ -61,7 +70,14 @@ export class SaveCategoryDlg implements OnInit, OnDestroy {
   }
 
   updateCategory(): void {
+    const categoryId = this.category()!.id;
+    const req = this.categoryForm.value;
 
+    this.#categoryApi.update(categoryId, req).subscribe(res => {
+      if (res && res.data) {
+        this.close(res.data);
+      }
+    });
   }
 
   close(data?: any): void {
@@ -78,7 +94,10 @@ export class SaveCategoryDlg implements OnInit, OnDestroy {
     this.categoryForm = this.#fb.group({
       name: ['', [Validators.required]],
       description: [''],
+      color: [''],
     });
+
+    this.formValidator = new FormValidator(this.categoryForm);
 
     if (this.instance && this.instance.data) {
       this.category.set(this.instance.data);
