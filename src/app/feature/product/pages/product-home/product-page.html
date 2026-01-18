@@ -1,1 +1,57 @@
-<span>product-page work!</span>
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-2xl text-gray-700 font-bold">
+    Productos
+  </h2>
+
+  <button pButton type="button" size="small" (click)="gotoSaveProductPage()">
+    <i class="ti ti-plus text-lg"></i>
+    Nuevo producto
+  </button>
+</div>
+
+<div class="bg-white rounded-lg pt-2 border border-gray-300 shadow">
+  <p-table [value]="products()"
+           [paginator]="true"
+           paginatorStyleClass="flex! justify-end!"
+           [rows]="rows"
+           [first]="first"
+           [showCurrentPageReport]="true"
+           [tableStyle]="{ 'min-width': '50rem' }"
+           currentPageReportTemplate="{first} – {last} de {totalRecords}"
+           (onPage)="pageChange($event)"
+           [rowsPerPageOptions]="[10, 25, 50]">
+    <ng-template #header>
+      <tr>
+        <th class="font-bold!">Nombre</th>
+        <th class="font-bold!">Descripción</th>
+        <th class="font-bold!">Activo</th>
+        <th class="font-bold!">Acciones</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-product>
+      <tr>
+        <td>{{ product.name }}</td>
+        <td>{{ product.description }}</td>
+        <td>
+          @if (product.active) {
+            <p-tag severity="success" value="Activo" />
+          } @else {
+            <p-tag severity="danger" value="Inactivo" />
+          }
+        </td>
+        <td>
+          <button type="button" pButton text size="small" rounded (click)="gotoSaveProductPage(product)">
+            <i class="ti ti-pencil text-xl"></i>
+          </button>
+
+          <button type="button" pButton text size="small" rounded severity="danger" (click)="confirmDeactivateCategory(product)">
+            <i class="ti ti-trash text-xl"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-confirm-dialog />
+
