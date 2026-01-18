@@ -1,59 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { Category } from '@/core/interfaces/category';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DialogService } from 'primeng/dynamicdialog';
 import { SaveCategoryDlg } from '../../components/save-category-dlg/save-category-dlg';
-
-export const CATEGORIES_MOCK: Category[] = [
-  {
-    id: 1,
-    image: 'https://picsum.photos/seed/internet/300/200',
-    name: 'Internet',
-    description: 'Servicios de conexión a internet residencial y empresarial.',
-    active: true,
-    createdBy: '550e8400-e29b-41d4-a716-446655440000',
-    createdAt: '2025-01-05T10:15:30Z'
-  },
-  {
-    id: 2,
-    image: 'https://picsum.photos/seed/telefonia/300/200',
-    name: 'Telefonía',
-    description: 'Planes de telefonía fija y móvil.',
-    active: true,
-    createdBy: '550e8400-e29b-41d4-a716-446655440001',
-    createdAt: '2025-01-06T08:45:00Z'
-  },
-  {
-    id: 3,
-    image: 'https://picsum.photos/seed/equipos/300/200',
-    name: 'Equipos',
-    description: 'Routers, ONT, decodificadores y otros dispositivos.',
-    active: true,
-    createdBy: '550e8400-e29b-41d4-a716-446655440002',
-    createdAt: '2025-01-07T14:20:10Z'
-  },
-  {
-    id: 4,
-    image: 'https://picsum.photos/seed/soporte/300/200',
-    name: 'Soporte Técnico',
-    description: 'Servicios de instalación, mantenimiento y soporte.',
-    active: false,
-    createdBy: '550e8400-e29b-41d4-a716-446655440003',
-    createdAt: '2025-01-08T09:00:00Z'
-  },
-  {
-    id: 5,
-    image: 'https://picsum.photos/seed/otros/300/200',
-    name: 'Otros Servicios',
-    description: 'Servicios adicionales y complementarios.',
-    active: true,
-    createdBy: '550e8400-e29b-41d4-a716-446655440004',
-    createdAt: '2025-01-09T16:30:45Z'
-  }
-];
-
+import { CategoryApi } from '@/core/services/category/category-api';
 
 @Component({
   selector: 'app-category-page',
@@ -66,15 +18,28 @@ export const CATEGORIES_MOCK: Category[] = [
   templateUrl: './category-page.html',
   styles: ``,
 })
-export class CategoryPage {
+export class CategoryPage implements OnInit {
   #dialogService = inject(DialogService);
   first = 0;
   rows = 10;
-  categories = signal(CATEGORIES_MOCK);
+  #categoryApi = inject(CategoryApi);
+  categories = signal<Category[]>([]);
+
+  ngOnInit(): void {
+    this.getCategories();
+  }
 
   pageChange(event: any): void {
     this.first = event.first;
     this.rows = event.rows;
+  }
+
+  getCategories(): void {
+    this.#categoryApi.getAll().subscribe(res => {
+      if (res && res.data && res.data.content) {
+        this.categories.set(res.data.content);
+      }
+    })
   }
 
   openSaveCategoryDlg(category?: Category): void {
@@ -90,6 +55,13 @@ export class CategoryPage {
         '640px': '90vw'
       },
     });
+
+    ref?.onClose.subscribe(res => {
+      if (res) {
+        console.log(res);
+        this.getCategories();
+      }
+    })
   }
 
 }

@@ -1,9 +1,20 @@
 export interface Category {
-  id: number;
-  image: string;
+  id: string;
+  parentId: number;
   name: string;
   description: string;
+  sortOrder: number;
+  color: string;
+  slug: string;
   active: boolean;
-  createdBy: string;
-  createdAt: string;
+}
+
+export interface CategoryCreateRequest {
+  parentId?: string;
+  companyId: string;
+  name: string;
+  description?: string;
+  sortOrder: number;
+  color?: string;
+  slug?: string;
 }

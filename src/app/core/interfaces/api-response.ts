@@ -5,7 +5,7 @@ export interface ApiResponse<T> {
 }
 
 export interface Page<T> {
-  content: T,
+  content: T[],
   page: {
     size: number;
     number: number;

@@ -6,6 +6,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { TextareaModule } from 'primeng/textarea';
+import { CategoryApi } from '@/core/services/category/category-api';
+import { SessionStore } from '@/core/services/session/session-store';
 
 @Component({
   selector: 'app-save-category-dlg',
@@ -24,6 +26,8 @@ export class SaveCategoryDlg implements OnInit, OnDestroy {
   private readonly _dialogRef = inject(DynamicDialogRef);
   private readonly _dialogService = inject(DialogService);
   #fb = inject(FormBuilder);
+  #categoryApi = inject(CategoryApi);
+  #sessionStore = inject(SessionStore);
 
   categoryForm!: FormGroup;
 
@@ -38,7 +42,26 @@ export class SaveCategoryDlg implements OnInit, OnDestroy {
   }
 
   saveCategory(): void {
-    console.log('Save Category', this.categoryForm.value);
+    if (this.instance && this.instance.data) {
+      this.updateCategory();
+    } else {
+      this.createCategory();
+    }
+  }
+
+  createCategory(): void {
+    const companyId = this.#sessionStore.companyId();
+    const req = {...this.categoryForm.value, companyId};
+
+    this.#categoryApi.create(req).subscribe(res => {
+      if (res && res.data) {
+        this.close(res.data);
+      }
+    });
+  }
+
+  updateCategory(): void {
+
   }
 
   close(data?: any): void {

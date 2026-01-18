@@ -22,7 +22,7 @@
            [rowsPerPageOptions]="[10, 25, 50]">
     <ng-template #header>
       <tr>
-        <th class="font-bold!">Image</th>
+        <th class="font-bold!">Color</th>
         <th class="font-bold!">Nombre</th>
         <th class="font-bold!">Descripción</th>
         <th class="font-bold!">Activo</th>
@@ -31,13 +31,7 @@
     </ng-template>
     <ng-template #body let-category>
       <tr>
-        <td>
-          <img
-            [src]="category.image"
-            [alt]="category.name"
-            class="size-12 object-cover rounded"
-          />
-        </td>
+        <td>{{ category.color }}</td>
         <td>{{ category.name }}</td>
         <td>{{ category.description }}</td>
         <td>
