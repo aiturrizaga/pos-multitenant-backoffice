@@ -67,8 +67,14 @@
     aria-label="Sidenav"
     id="drawer-navigation"
   >
-    <div class="overflow-y-auto py-5 px-3 h-full bg-white dark:bg-gray-800">
-      <ul class="space-y-2">
+    <div class="overflow-y-auto h-full bg-white dark:bg-gray-800">
+      @if (sessionStore.company(); as company) {
+        <div class="px-3 py-4 font-medium">
+          {{ company.name }}
+        </div>
+        <hr class="text-gray-300">
+      }
+      <ul class="space-y-2 px-3 pt-4">
         @for (item of menuItems(); track item.id) {
           <li>
             <a

@@ -12,7 +12,9 @@ export class SessionStore {
 
   readonly tenantId = computed(() => this._session()?.tenant?.id ?? null);
   readonly companyId = computed(() => this._session()?.company?.id ?? null);
+  readonly company = computed(() => this._session()?.company ?? null);
   readonly userId = computed(() => this._session()?.user?.id ?? null);
+  readonly user = computed(() => this._session()?.user ?? null);
 
   set(session: SessionDto): void {
     this._session.set(session);
