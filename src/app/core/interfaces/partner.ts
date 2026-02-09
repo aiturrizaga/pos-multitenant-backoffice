@@ -18,7 +18,7 @@ export interface PartnerResponse {
 }
 
 export class CreateCompanyRequest {
-  readonly partnerType = 'COMPANY';
+  readonly type = 'COMPANY';
   displayName?: string | null;
   legalName: string;
   tradeName: string;
@@ -37,7 +37,7 @@ export class CreateCompanyRequest {
 }
 
 export class CreatePersonRequest {
-  readonly partnerType = 'PERSON';
+  readonly type = 'PERSON';
   firstName: string;
   lastName: string;
   displayName?: string | null;

@@ -8,6 +8,7 @@ import { SaveCategoryDlg } from '../../components/save-category-dlg/save-categor
 import { CategoryApi } from '@/core/services/category/category-api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-category-page',
@@ -16,6 +17,7 @@ import { ConfirmationService } from 'primeng/api';
     TableModule,
     TagModule,
     ConfirmDialogModule,
+    Tooltip,
   ],
   providers: [DialogService, ConfirmationService],
   templateUrl: './category-page.html',
@@ -39,7 +41,7 @@ export class CategoryPage implements OnInit {
   }
 
   getCategories(): void {
-    this.#categoryApi.getAll().subscribe(res => {
+    this.#categoryApi.getAll({sort: 'id,desc'}).subscribe(res => {
       if (res && res.data && res.data.content) {
         this.categories.set(res.data.content);
       }

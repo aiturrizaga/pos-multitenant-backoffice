@@ -34,13 +34,13 @@
     </ng-template>
     <ng-template #body let-customer>
       <tr>
-        @if (customer.partnerType === 'PERSON') {
+        @if (customer.type === 'PERSON') {
           <td>Persona</td>
         } @else {
           <td>Empresa</td>
         }
 
-        @if (customer.partnerType === 'PERSON') {
+        @if (customer.type === 'PERSON') {
           <td>{{ customer.firstName }} {{ customer.lastName }}</td>
         } @else {
           <td>{{ customer.legalName | uppercase }}</td>
