@@ -9,7 +9,7 @@ import { ApiResponse } from '@/core/interfaces/api-response';
 })
 export class UnitMeasureApi {
   #http = inject(HttpClient);
-  private readonly apiUrl = `${ environment.api.gateway }/ms-catalogue/v1/unit-measures`;
+  private readonly apiUrl = `${ environment.api.gateway }/ms-catalogue/v1/uom`;
 
   getAll() {
     return this.#http.get<ApiResponse<UnitMeasure[]>>(this.apiUrl);

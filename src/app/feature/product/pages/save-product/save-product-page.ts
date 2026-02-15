@@ -18,9 +18,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { TextareaModule } from 'primeng/textarea';
 import { CheckboxModule } from 'primeng/checkbox';
-import { ToggleSwitchChangeEvent, ToggleSwitchModule } from 'primeng/toggleswitch';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { ProductApi } from '@/core/services/product/product-api';
 import { ToastModule } from 'primeng/toast';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-save-product-page',
@@ -37,7 +38,8 @@ import { ToastModule } from 'primeng/toast';
     TextareaModule,
     CheckboxModule,
     ToggleSwitchModule,
-    ToastModule
+    ToastModule,
+    RadioButtonModule
   ],
   providers: [
     MessageService
@@ -100,7 +102,6 @@ export class SaveProductPage implements OnInit {
   ]);
   groupedUnitMeasures = signal<UnitMeasureGrouped[]>([]);
   categories = signal<Category[]>([]);
-  trackInventory = signal<boolean>(false);
 
   productForm!: FormGroup;
   formValidator!: FormValidator;
@@ -156,22 +157,6 @@ export class SaveProductPage implements OnInit {
     this.#router.navigate(['/products']).then();
   }
 
-  addSku(): void {
-    this.skus.push(this.createSkuGroup());
-  }
-
-  removeSku(index: number): void {
-    this.skus.removeAt(index);
-  }
-
-  changeTrackInventory(event: ToggleSwitchChangeEvent): void {
-    this.trackInventory.set(event.checked);
-    this.productForm.patchValue({
-      trackInventory: event.checked,
-      inventoryPolicy: event.checked ? 'TRACK' : 'NONE'
-    });
-  }
-
   private getGroupedUnitMeasures(): void {
     this.#uomApi.getGrouped().subscribe(res => {
       if (res && res.data) {
@@ -188,80 +173,36 @@ export class SaveProductPage implements OnInit {
     })
   }
 
-  private createSkuGroup(sku?: ProductSkuResponse): FormGroup {
-    return this.#fb.group({
-      id: [sku?.id ?? null],
-      skuCode: [sku?.skuCode ?? ''],
-      barcode: [sku?.barcode ?? ''],
-      name: [sku?.name ?? '', [Validators.required]],
-      uomId: [sku?.uomId ?? null, [Validators.required]],
-      salePrice: [sku?.salePrice ?? null],
-      costPrice: [sku?.costPrice ?? null],
-      isDefault: [sku?.isDefault ?? false, [Validators.required]],
-      isBaseUnit: [sku?.isBaseUnit ?? false],
-      baseSkuId: [sku?.baseSkuId ?? null],
-      baseQty: [sku?.baseQty ?? null],
-    });
-  }
-
-  private loadSkusFromProduct(product: ProductResponse): void {
-    this.skus.clear();
-
-    const skus = product.skus ?? [];
-    if (skus.length === 0) {
-      this.addSku();
-      return;
-    }
-
-    skus.forEach(sku => this.skus.push(this.createSkuGroup(sku)));
-  }
-
   private initProductForm(): void {
     this.productForm = this.#fb.group({
-      code: ['', [Validators.required, Validators.maxLength(20)]],
+
       name: ['', [Validators.required, Validators.maxLength(255)]],
       description: ['', [Validators.required, Validators.maxLength(500)]],
-      brand: [''],
-
+      type: ['SIMPLE', [Validators.required]],
+      code: ['', [Validators.maxLength(20)]],
       currencyCode: ['PEN', [Validators.required, Validators.pattern(/^[A-Z]{3}$/)]],
+      price: [0, [Validators.required, Validators.min(0)]],
+      uomId: [null, [Validators.required]],
       taxId: [1, [Validators.required, Validators.min(1)]],
       unspsc: [null as number | null],
-
-      allowDiscount: [true],
-      allowPriceOverride: [false],
-
+      sellable: [true],
       trackInventory: [false],
-      inventoryPolicy: ['NONE' as ProductCreateRequest['inventoryPolicy']],
-
       trackLot: [false],
       trackExpiry: [false],
-
-      metadata: [null as unknown | null],
-
+      allowDiscount: [true],
       categoryIds: [[]],
-
-      skus: this.#fb.array<FormGroup>([])
+      metadata: [null as unknown | null],
     });
 
     this.formValidator = new FormValidator(this.productForm);
 
-    if (!this.product()) {
-      this.addSku();
-      return;
-    }
-
     const product = this.product()!;
-
-    this.productForm.patchValue({
-      ...product,
-      categoryIds: product.categories?.map(c => c.id) ?? []
-    });
-
-    this.loadSkusFromProduct(product);
-  }
-
-  get skus(): FormArray<FormGroup> {
-    return this.productForm.get('skus') as FormArray<FormGroup>;
+    if (product) {
+      this.productForm.patchValue({
+        ...product,
+        categoryIds: product.categories?.map(c => c.id) ?? []
+      });
+    }
   }
 
 }

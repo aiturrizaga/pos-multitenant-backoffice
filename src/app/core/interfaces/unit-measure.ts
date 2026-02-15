@@ -10,5 +10,7 @@ export interface UnitMeasure {
 
 export interface UnitMeasureGrouped {
   category: string;
-  items: UnitMeasure[];
+  items: UoMGroupItem[];
 }
+
+export type UoMGroupItem = Pick<UnitMeasure, 'id' | 'code' | 'name' | 'symbol' | 'isBaseUnit'>;
