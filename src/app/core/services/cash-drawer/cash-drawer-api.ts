@@ -2,14 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse, Page } from '@/core/interfaces/api-response';
-import { TerminalCreateRequest, TerminalResponse, TerminalUpdateRequest } from '@/core/interfaces/terminal';
+import { CashDrawerCreateRequest, CashDrawerResponse, CashDrawerUpdateRequest } from '@/core/interfaces/cash-drawer';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TerminalApi {
+export class CashDrawerApi {
   #http = inject(HttpClient);
-  private readonly baseUrl = `${ environment.api.gateway }/ms-pos/v1/terminals`;
+  private readonly baseUrl = `${ environment.api.gateway }/ms-pos/v1/cash-drawers`;
 
   getAll(opts?: { page?: number; size?: number; sort?: string | string[]; active?: boolean }) {
     let params = new HttpParams();
@@ -26,15 +26,15 @@ export class TerminalApi {
       sort.forEach(s => (params = params.append('sort', s)));
     }
 
-    return this.#http.get<ApiResponse<Page<TerminalResponse>>>(`${ this.baseUrl }`, { params });
+    return this.#http.get<ApiResponse<Page<CashDrawerResponse>>>(`${ this.baseUrl }`, { params });
   }
 
-  create(req: TerminalCreateRequest) {
-    return this.#http.post<ApiResponse<TerminalResponse>>(`${ this.baseUrl }`, req);
+  create(req: CashDrawerCreateRequest) {
+    return this.#http.post<ApiResponse<CashDrawerResponse>>(`${ this.baseUrl }`, req);
   }
 
-  update(id: number, req: TerminalUpdateRequest) {
-    return this.#http.put<ApiResponse<TerminalResponse>>(`${ this.baseUrl }/${ id }`, req);
+  update(id: number, req: CashDrawerUpdateRequest) {
+    return this.#http.put<ApiResponse<CashDrawerResponse>>(`${ this.baseUrl }/${ id }`, req);
   }
 
   deactivate(id: number) {

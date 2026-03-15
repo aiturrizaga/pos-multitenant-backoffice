@@ -81,7 +81,7 @@ export class ShellLayout implements OnInit {
         {
           id: '9',
           label: 'Cajas',
-          routerLink: 'drawers'
+          routerLink: 'cash-drawers'
         }
       ]
     }

@@ -51,7 +51,7 @@ export const routes: Routes = [
         loadChildren: () => import('./feature/terminal/terminal.routes').then(m => m.routes)
       },
       {
-        path: 'drawers',
+        path: 'cash-drawers',
         data: { roles: ['admin'] },
         loadChildren: () => import('./feature/drawer/drawer.routes').then(m => m.routes)
       },

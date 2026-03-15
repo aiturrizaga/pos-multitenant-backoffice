@@ -4,16 +4,18 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
+import { SelectModule } from 'primeng/select';
 import { DialogService, DynamicDialog, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { TerminalApi } from '@/core/services/terminal/terminal-api';
 import { StoreApi } from '@/core/services/store/store-api';
 import { FormValidator } from '@/shared/utils/form-validator.util';
 import { StoreResponse } from '@/core/interfaces/store';
-import { TerminalApi } from '@/core/services/terminal/terminal-api';
-import { SelectModule } from 'primeng/select';
+import { CashDrawerApi } from '@/core/services/cash-drawer/cash-drawer-api';
+import { CashDrawerResponse } from '@/core/interfaces/cash-drawer';
 import { TerminalResponse } from '@/core/interfaces/terminal';
 
 @Component({
-  selector: 'app-save-terminal-dlg',
+  selector: 'app-save-cash-drawer-dlg',
   imports: [
     ReactiveFormsModule,
     InputTextModule,
@@ -22,21 +24,22 @@ import { TerminalResponse } from '@/core/interfaces/terminal';
     MessageModule,
     SelectModule,
   ],
-  templateUrl: './save-terminal-dlg.html',
-  styles: ``,
+  templateUrl: './save-cash-drawer-dlg.html',
 })
-export class SaveTerminalDlg implements OnInit, OnDestroy {
+export class SaveCashDrawerDlg implements OnInit, OnDestroy {
   private readonly instance: DynamicDialog | undefined;
   private readonly _dialogRef = inject(DynamicDialogRef);
   private readonly _dialogService = inject(DialogService);
   #fb = inject(FormBuilder);
+  #cashDrawerApi = inject(CashDrawerApi);
   #terminalApi = inject(TerminalApi);
   #storeApi = inject(StoreApi);
 
   form!: FormGroup;
   formValidator!: FormValidator;
 
-  terminal = signal<TerminalResponse | null>(null);
+  cashDrawer = signal<CashDrawerResponse | null>(null);
+  terminals = signal<TerminalResponse[]>([]);
   stores = signal<StoreResponse[]>([]);
 
   constructor() {
@@ -46,33 +49,34 @@ export class SaveTerminalDlg implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
     this.getStores();
+    this.getTerminals();
   }
 
-  saveTerminal(): void {
+  save(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     if (this.instance && this.instance.data) {
-      this.updateTerminal();
+      this.update();
     } else {
-      this.createTerminal();
+      this.create();
     }
   }
 
-  createTerminal(): void {
-    this.#terminalApi.create(this.form.value).subscribe(res => {
+  create(): void {
+    this.#cashDrawerApi.create(this.form.value).subscribe(res => {
       if (res && res.data) {
         this.close(res.data);
       }
     });
   }
 
-  updateTerminal(): void {
-    const terminalId = this.terminal()!.id;
+  update(): void {
+    const cashDrawerId = this.cashDrawer()!.id;
 
-    this.#terminalApi.update(terminalId, this.form.value).subscribe(res => {
+    this.#cashDrawerApi.update(cashDrawerId, this.form.value).subscribe(res => {
       if (res && res.data) {
         this.close(res.data);
       }
@@ -89,6 +93,14 @@ export class SaveTerminalDlg implements OnInit, OnDestroy {
     }
   }
 
+  private getTerminals(): void {
+    this.#terminalApi.getAll({ active: true }).subscribe(res => {
+      if (res && res.data && res.data.content) {
+        this.terminals.set(res.data.content);
+      }
+    })
+  }
+
   private getStores(): void {
     this.#storeApi.getAll({ active: true }).subscribe(res => {
       if (res && res.data && res.data.content) {
@@ -101,13 +113,14 @@ export class SaveTerminalDlg implements OnInit, OnDestroy {
     this.form = this.#fb.group({
       code: ['', [Validators.required]],
       name: ['', [Validators.required]],
-      storeId: ['', [Validators.required]],
+      storeId: [''],
+      terminalId: ['', [Validators.required]],
     });
 
     this.formValidator = new FormValidator(this.form);
 
     if (this.instance && this.instance.data) {
-      this.terminal.set(this.instance.data);
+      this.cashDrawer.set(this.instance.data);
       this.form.patchValue(this.instance.data);
     }
   }
