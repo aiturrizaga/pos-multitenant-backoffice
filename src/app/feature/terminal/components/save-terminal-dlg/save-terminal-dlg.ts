@@ -5,34 +5,38 @@ import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { DialogService, DynamicDialog, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { SessionStore } from '@/core/services/session/session-store';
-import { FormValidator } from '@/shared/utils/form-validator.util';
 import { StoreApi } from '@/core/services/store/store-api';
+import { FormValidator } from '@/shared/utils/form-validator.util';
 import { StoreResponse } from '@/core/interfaces/store';
+import { TerminalApi } from '@/core/services/terminal/terminal-api';
+import { Select } from 'primeng/select';
 
 @Component({
-  selector: 'app-save-store-dlg',
+  selector: 'app-save-terminal-dlg',
   imports: [
     ReactiveFormsModule,
     InputTextModule,
     TextareaModule,
     ButtonModule,
     MessageModule,
+    Select,
   ],
-  templateUrl: './save-store-dlg.html',
+  templateUrl: './save-terminal-dlg.html',
   styles: ``,
 })
-export class SaveStoreDlg implements OnInit, OnDestroy {
+export class SaveTerminalDlg implements OnInit, OnDestroy {
   private readonly instance: DynamicDialog | undefined;
   private readonly _dialogRef = inject(DynamicDialogRef);
   private readonly _dialogService = inject(DialogService);
   #fb = inject(FormBuilder);
+  #terminalApi = inject(TerminalApi);
   #storeApi = inject(StoreApi);
 
   form!: FormGroup;
   formValidator!: FormValidator;
 
-  store = signal<StoreResponse | null>(null);
+  terminal = signal<StoreResponse | null>(null);
+  stores = signal<StoreResponse[]>([]);
 
   constructor() {
     this.instance = this._dialogService.getInstance(this._dialogRef);
@@ -40,33 +44,34 @@ export class SaveStoreDlg implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initForm();
+    this.getStores();
   }
 
-  saveStore(): void {
+  saveTerminal(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     if (this.instance && this.instance.data) {
-      this.updateStore();
+      this.updateTerminal();
     } else {
-      this.createStore();
+      this.createTerminal();
     }
   }
 
-  createStore(): void {
-    this.#storeApi.create(this.form.value).subscribe(res => {
+  createTerminal(): void {
+    this.#terminalApi.create(this.form.value).subscribe(res => {
       if (res && res.data) {
         this.close(res.data);
       }
     });
   }
 
-  updateStore(): void {
-    const storeId = this.store()!.id;
+  updateTerminal(): void {
+    const terminalId = this.terminal()!.id;
 
-    this.#storeApi.update(storeId, this.form.value).subscribe(res => {
+    this.#terminalApi.update(terminalId, this.form.value).subscribe(res => {
       if (res && res.data) {
         this.close(res.data);
       }
@@ -83,19 +88,25 @@ export class SaveStoreDlg implements OnInit, OnDestroy {
     }
   }
 
+  private getStores(): void {
+    this.#storeApi.getAll({ active: true }).subscribe(res => {
+      if (res && res.data && res.data.content) {
+        this.stores.set(res.data.content);
+      }
+    })
+  }
+
   private initForm(): void {
     this.form = this.#fb.group({
+      code: ['', [Validators.required]],
       name: ['', [Validators.required]],
-      email: [''],
-      phone: [''],
-      addressId: [1],
-      state: [1],
+      storeId: ['', [Validators.required]],
     });
 
     this.formValidator = new FormValidator(this.form);
 
     if (this.instance && this.instance.data) {
-      this.store.set(this.instance.data);
+      this.terminal.set(this.instance.data);
       this.form.patchValue(this.instance.data);
     }
   }

@@ -1,0 +1,55 @@
+<form [formGroup]="form"
+      (ngSubmit)="saveTerminal()"
+      class="flex flex-col gap-4 w-full">
+
+  <div class="flex flex-col gap-1">
+    <label for="txtStoreId">Sucursal</label>
+    <p-select [options]="stores()"
+              [readonly]="terminal()"
+              formControlName="storeId"
+              optionLabel="name"
+              optionValue="id"
+              inputId="txtStoreId"
+              placeholder="Selecciona la sucursal"
+              class="w-full"/>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtCode">Código</label>
+    <input pInputText
+           type="text"
+           id="txtCode"
+           formControlName="code"
+           [readonly]="terminal()"
+           [invalid]="formValidator.hasError('code')"/>
+    @if (formValidator.hasError('code')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('code') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtName">Nombre</label>
+    <input pInputText
+           type="text"
+           id="txtName"
+           formControlName="name"
+           [invalid]="formValidator.hasError('name')"/>
+    @if (formValidator.hasError('name')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('name') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex justify-end gap-2">
+    <button pButton severity="secondary" type="button" (click)="close()">
+      <span pButtonLabel>Cancelar</span>
+    </button>
+
+    <button pButton type="submit">
+      <span pButtonLabel>{{ terminal() ? 'Actualizar' : 'Guardar' }}</span>
+    </button>
+  </div>
+</form>
