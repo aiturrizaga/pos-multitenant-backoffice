@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { MenuItem } from 'primeng/api';
 import { Avatar } from 'primeng/avatar';
@@ -29,6 +29,8 @@ export class ShellLayout implements OnInit {
   profile = signal<KeycloakProfile | null>(null);
   private keycloak = inject(Keycloak);
   sessionStore = inject(SessionStore);
+
+  #router = inject(Router);
 
   menuItems = signal<MenuItem[]>([
     {
@@ -65,7 +67,23 @@ export class ShellLayout implements OnInit {
       id: '6',
       icon: 'ti ti-settings text-2xl',
       label: 'Configuración',
-      routerLink: 'settings'
+      items: [
+        {
+          id: '7',
+          label: 'Sucursales',
+          routerLink: 'stores'
+        },
+        {
+          id: '8',
+          label: 'Terminales',
+          routerLink: 'terminals'
+        },
+        {
+          id: '9',
+          label: 'Cajas',
+          routerLink: 'drawers'
+        }
+      ]
     }
   ]);
   userOptions = signal<MenuItem[]>([
@@ -99,6 +117,12 @@ export class ShellLayout implements OnInit {
     this.keycloak.logout({
       redirectUri: window.location.origin
     }).then();
+  }
+
+  isChildActive(items: MenuItem[] | undefined): boolean {
+    return items?.some(item => this.#router.isActive(item.routerLink ?? '', {
+      paths: 'subset', queryParams: 'ignored', fragment: 'ignored', matrixParams: 'ignored'
+    })) ?? false;
   }
 
   get fullName(): string {

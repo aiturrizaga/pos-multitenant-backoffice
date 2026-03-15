@@ -1,0 +1,44 @@
+<form [formGroup]="form"
+      (ngSubmit)="saveStore()"
+      class="flex flex-col gap-4 w-full">
+
+  <div class="flex flex-col gap-1">
+    <label for="txtName">Nombre</label>
+    <input pInputText type="text" id="txtName" formControlName="name" [invalid]="formValidator.hasError('name')"/>
+    @if (formValidator.hasError('name')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('name') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtEmail">Email</label>
+    <input pInputText type="email" id="txtEmail" formControlName="email" [invalid]="formValidator.hasError('email')"/>
+    @if (formValidator.hasError('email')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('email') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="txtName">Telefono</label>
+    <input pInputText type="text" id="txtName" formControlName="phone" [invalid]="formValidator.hasError('phone')"/>
+    @if (formValidator.hasError('phone')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('phone') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex justify-end gap-2">
+    <button pButton severity="secondary" type="button" (click)="close()">
+      <span pButtonLabel>Cancelar</span>
+    </button>
+
+    <button pButton type="submit">
+      <span pButtonLabel>{{ store() ? 'Actualizar' : 'Guardar' }}</span>
+    </button>
+  </div>
+</form>

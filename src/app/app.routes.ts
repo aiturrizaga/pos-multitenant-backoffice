@@ -41,6 +41,21 @@ export const routes: Routes = [
         loadChildren: () => import('./feature/setting/setting.routes').then(m => m.routes)
       },
       {
+        path: 'stores',
+        data: { roles: ['admin'] },
+        loadChildren: () => import('./feature/store/store.routes').then(m => m.routes)
+      },
+      {
+        path: 'terminals',
+        data: { roles: ['admin'] },
+        loadChildren: () => import('./feature/terminal/terminal.routes').then(m => m.routes)
+      },
+      {
+        path: 'drawers',
+        data: { roles: ['admin'] },
+        loadChildren: () => import('./feature/drawer/drawer.routes').then(m => m.routes)
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'products'

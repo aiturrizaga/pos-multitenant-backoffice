@@ -77,14 +77,42 @@
       <ul class="space-y-2 px-3 pt-4">
         @for (item of menuItems(); track item.id) {
           <li>
-            <a
-              [routerLink]="item.routerLink"
-              routerLinkActive="bg-purple-800 text-white hover:bg-purple-800 hover:text-white"
-              class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-            >
-              <i [class]="item.icon"></i>
-              <span class="ml-3">{{ item.label }}</span>
-            </a>
+            @if (item.items?.length) {
+              <details class="group/d" [attr.open]="isChildActive(item.items) || null">
+                <summary [class.bg-gray-100]="isChildActive(item.items)"
+                  class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer list-none">
+                  <i [class]="item.icon"></i>
+                  <span class="ml-3 flex-1">{{ item.label }}</span>
+                  <i class="ti ti-chevron-right text-sm transition-transform duration-200 group-open/d:rotate-90"></i>
+                </summary>
+                <ul class="mt-1 ml-4 space-y-1 border-l border-gray-200 dark:border-gray-600 pl-3">
+                  @for (child of item.items; track child.id) {
+                    <li>
+                      <a
+                        [routerLink]="child.routerLink"
+                        routerLinkActive="bg-purple-800 text-white hover:bg-purple-800 hover:text-white"
+                        class="flex items-center p-2 text-sm font-medium text-gray-700 rounded-lg dark:text-gray-300
+                      hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        @if (child.icon) {
+                          <i [class]="child.icon"></i>
+                        }
+                        <span class="ml-3">{{ child.label }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </details>
+            } @else {
+              <a
+                [routerLink]="item.routerLink"
+                routerLinkActive="bg-purple-800 text-white hover:bg-purple-800 hover:text-white"
+                class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <i [class]="item.icon"></i>
+                <span class="ml-3">{{ item.label }}</span>
+              </a>
+            }
           </li>
         }
       </ul>
